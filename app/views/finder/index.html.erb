@@ -13,4 +13,11 @@
 <% @customers.each do |customer| %>
   <p><%= customer.full_name %></p>
   <p><%= customer.phone_number %></p>
+  <p>Province:
+    <% if customer.province.present? %>
+      <%= customer.province.name %>
+    <% else %>
+      None
+    <% end %>
+  </p>
 <% end %>
