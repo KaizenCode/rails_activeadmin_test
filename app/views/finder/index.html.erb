@@ -1,1 +1,16 @@
-<h1>Hi there</h1>
+<h1>Here's all the customers</h1>
+
+<h2>Short form render</h2>
+<%= render @customers %>
+
+
+<h2>Long form render</h2>
+<% # Will automatically search the views/customers folder for a partial for customers %>
+<%= render partial: 'customers/customer',
+           collection: @customers %>
+
+<h2>Manual collection iteration</h2>
+<% @customers.each do |customer| %>
+  <p><%= customer.full_name %></p>
+  <p><%= customer.phone_number %></p>
+<% end %>
