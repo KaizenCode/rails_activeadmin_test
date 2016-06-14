@@ -1,0 +1,16 @@
+title "Inventory Sync"
+
+para 'This is a test'
+
+table do
+  thead do
+    tr do
+      %w[Sunday Monday Tuesday Wednesday Thursday Friday].each &method(:th)
+    end
+  end
+  tbody do
+    tr do
+      %w[Sunday Monday Tuesday Wednesday Thursday Friday].each &method(:td)
+    end
+  end
+end
