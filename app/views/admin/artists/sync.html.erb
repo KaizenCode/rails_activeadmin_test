@@ -1,6 +1,8 @@
 <script src="https://fb.me/react-15.1.0.js"></script>
 <script src="https://fb.me/react-dom-15.1.0.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/remarkable/1.6.2/remarkable.min.js"></script>
 
 <div id="example"></div>
 <div id="example2"></div>
@@ -35,12 +37,45 @@
 
 // Tutorial Code
 
+  var dataComments = [
+    {id: 1, author: "Pete Hunt", text: "This is one comment"},
+    {id: 2, author: "Jordan Walke", text: "This is *another* comment"}
+  ];
+
+  // Tutorial 4
+  var Comment = React.createClass({
+    rawMarkup: function() {
+      var md = new Remarkable();
+      var rawMarkup = md.render(this.props.children.toString());
+      return { __html: rawMarkup };
+    },
+
+    render: function() {
+//      var markdown = new Remarkable();
+      return (
+          <div className="comment">
+            <h2 className="commentAuthor">
+              {this.props.author}
+            </h2>
+            <span dangerouslySetInnerHTML={this.rawMarkup()}></span>
+          </div>
+      )
+    }
+  });
+
   // tutorial2.js
   var CommentList = React.createClass({
     render: function() {
+      var commentNodes = this.props.data.map(function(comment) {
+        return (
+            <Comment author={comment.author} key={comment.id}>
+              {comment.text}
+            </Comment>
+        );
+      });
       return (
           <div className="commentList">
-            Hello, world! I am a CommentList.
+            {commentNodes}
           </div>
       );
     }
@@ -62,28 +97,16 @@
       return (
           <div className="commentBox">
             <h1>Comments</h1>
-            <CommentList />
+            <CommentList data={this.props.data} />
             <CommentForm />
           </div>
       );
     }
   });
 
-  var Comment = React.createClass({
-    render: function() {
-      return (
-          <div className="comment">
-            <h2 className="commentAuthor">
-              {this.props.author}
-            </h2>
-            {this.props.children}
-          </div>
-      )
-    }
-  });
 
   ReactDOM.render(
-      <CommentBox />,
+      <CommentBox data={dataComments}/>,
       document.getElementById('tutorial')
   );
 </script>
