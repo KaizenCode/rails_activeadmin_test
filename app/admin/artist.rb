@@ -8,6 +8,9 @@ ActiveAdmin.register Artist do
     #Establishes the route for sync
   end
 
+  member_action :invsync, method: :get do
+  end
+
   def display_search
     show do
       url = "https://api.spotify.com/v1/search?type=artist&q=#{artist.name}"
@@ -31,7 +34,11 @@ ActiveAdmin.register Artist do
       # if render not specififed, it will look for the default view in /views/admin/artists/sync
 
       # render :show #renders the default show
-      # render 'admin/artists/sync1.html.erb', :layout => false #renders a completely separate view
+      # render 'admin/artists/sync.html.erb', :layout => false #renders a completely separate view
+    end
+
+    def invsync
+      @artist = Artist.find(params[:id])
     end
   end
   # def showsync

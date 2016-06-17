@@ -1,0 +1,186 @@
+<script src="https://fb.me/react-15.1.0.js"></script>
+<script src="https://fb.me/react-dom-15.1.0.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+<script type="text/javascript">
+  // All this data is temporary and should be retrieved via api calls later
+  var syncTimes = [
+    {
+      RetailerId: "dc96584c-9531-4cfe-a0a3-5f78bc95014f",
+      RetailerName: "Satori",
+      SyncTime: "2016-06-15T18:55:38.367079"
+    },
+    {
+      RetailerId: "f1276edd-44f8-4f43-8126-be6c2040e592",
+      RetailerName: "Lucky Leaf",
+      SyncTime: "2016-06-15T18:55:21.164266"
+    }
+  ];
+
+  var successEvents = [{
+    RetailerId: "73e1b778-0778-40bf-b347-5a8c4f572c2d",
+    SerializedEvent: "{\"RetailerItemId\":\"0abeaf98-d0c9-451d-8140-a8bc3159e0f2\",\"Quantity\":39.0,\"Version\":50251,\"AggregateId\":\"73e1b778-0778-40bf-b347-5a8c4f572c2d\",\"TimeStamp\":\"2016-06-15T21:25:31.7443814+00:00\",\"Id\":\"afe2ce52-5e61-47c6-8719-097328574c66\"}",
+    Timestamp: "2016-06-15T21:25:32.71311",
+    EventType: "InventoryItemQuantityUpdated",
+    EventId: "afe2ce52-5e61-47c6-8719-097328574c66"
+  },
+    {
+      RetailerId: "73e1b778-0778-40bf-b347-5a8c4f572c2d",
+      SerializedEvent: "{\"RetailerItemId\":\"bc9bae9a-01cd-4528-97ff-5314b72438f9\",\"SKU\":\"6033959770000479\",\"Name\":\"Heavyweight Farms 1g Green Crack 6/10/16\",\"DisplayName\":\"Green Crack\",\"Description\":\"\",\"Supplier\":\"Heavyweight Farms\",\"IndicaPercent\":0.0,\"SativaPercent\":0.0,\"ThcPercent\":22.2,\"CbnPercent\":-1.0,\"CbdPercent\":0.4,\"Species\":null,\"Category\":\"Flowers\",\"Strain\":\"Green Crack\",\"Stock\":{\"OnHold\":false,\"Quantity\":10.0,\"UnitOfMeasure\":\"Each\"},\"Weight\":{\"UnitWeightName\":\"Grams\",\"UnitWeightValue\":1.0},\"Pictures\":null,\"UnitsPrices\":[{\"UnitPriceName\":\"Each\",\"UnitPriceValue\":11.5}],\"LotItems\":[{\"RetailerLotItemId\":\"8cd7cabd-a799-4872-bd4f-4301c0949486\",\"SKU\":\"6033959770000479\",\"Quantity\":10.0,\"Weight\":1.0,\"LotNumber\":6033959770000479,\"SellType\":\"Sellable\",\"IsSample\":false,\"IsTransferredOut\":false,\"ThcPercent\":22.2,\"CbdPercent\":0.4}],\"UpdatedAtUtc\":\"0001-01-01T00:00:00\",\"Version\":50250,\"AggregateId\":\"73e1b778-0778-40bf-b347-5a8c4f572c2d\",\"TimeStamp\":\"2016-06-15T21:25:31.7287571+00:00\",\"Id\":\"3242768b-6618-4cf9-996a-d6e8bb4b2d39\"}",
+      Timestamp: "2016-06-15T21:25:32.619361",
+      EventType: "InventoryItemUpdated",
+      EventId: "3242768b-6618-4cf9-996a-d6e8bb4b2d39"
+    }
+  ];
+
+  var config = {
+        "Id": "2fb8093a-8c63-470c-9bdc-e0e526a15db7",
+        "Name": "Evergreen Cannabis",
+        "PollIntervalInSeconds": 60,
+        "PollStartTimeUtc":  { "Hour" : 0, "Minute" :  0 },
+        "PollEndTimeUtc":  { "Hour" : 23, "Minute" :  59 },
+        "InventoryProviderApiKey": "WPQlJ1c_4j7TTK0ynkiO1A",
+        "InventoryProviderApiHeaders": { },
+        "InventoryProviderType": "GreenBits",
+        "CategoryMappings": {
+          "Paraphernalia": null,
+          "Flower": "Flowers",
+          "Edible (Solid)": "Food",
+          "Edible (Liquid)": "Drink",
+          "Concentrate": "Concentrates",
+          "Topical": "Other",
+          "Pre-Roll": "Joints",
+          "Sample": null,
+          "Sniffer Jar": null
+        },
+        "SupplierNameMappings": {
+          "Western Cultured": [ "Western Culture" ],
+          "Cannabis King Gardens": [ "CKG" ],
+          "Crescendo Chocolate": [ "Crescendo" ],
+          "Green Freedom": [ "Sweet As!" ],
+          "Forbidden Garden": [ "Western Cultured" ],
+          "Wow Weed": [ "WOW" ]
+        },
+        "ProductNameSanitizerRegexes": [
+          "(^| )Craft Flower( |$)",
+          "(^| )Finished Flower( |$)",
+          "(^| )\\d+ Dollars( |$)",
+          "\\d{1,2}[\\/\\.\\-]\\d{1,2}([\\/\\.\\-]\\d{2,4})?( |$)"
+        ]
+      };
+</script>
+
+<div id="main"></div>
+
+<script type="text/babel">
+
+  var SyncDetailRow = React.createClass({
+    render: function() {
+      return (
+        <tr>
+          <td>{this.props.eventDetail.EventType}</td>
+          <td>{this.props.eventDetail.Timestamp}</td>
+          <td>{this.props.eventDetail.SerializedEvent}</td>
+        </tr>
+      )
+    }
+  });
+
+  var LastSyncEventsTable = React.createClass({
+    render: function() {
+      var rows = [];
+      this.props.events.forEach(function(evt) {
+        rows.push(<SyncDetailRow eventDetail={evt} />);
+      });
+
+      return (
+        <table>
+          <thead>
+            <th>Event Type</th>
+            <th>Timestamp</th>
+            <th>SerialzedEvent</th>
+          </thead>
+          <tbody>{rows}</tbody>
+        </table>
+      )
+    }
+  });
+
+  // props cannot be assigned, it is based on what is passed in
+  var LastSyncDetails = React.createClass({
+    displayName : "Sync Times",
+    loadLastSyncDetails: function() {
+      var self = this;
+      var match = null;
+      syncTimes.forEach(function(retailer) {
+        if (retailer.RetailerId == self.props.retailerId)
+          match = retailer;
+      });
+
+      //todo: at some point set a timer so that we can refresh the events
+      // usually returns an object so that you can match on the name
+      return {data : match};
+    },
+    getInitialState : function() {
+      return this.loadLastSyncDetails();
+    },
+    render: function() {
+      return (
+          <div>
+            <h1>{this.state.data.RetailerName}</h1>
+            <div>Id: {this.props.retailerId}</div>
+          </div>
+      )
+    }
+  });
+
+  var CategoryMappings = React.createClass({
+
+    render : function() {
+      var rows = [];
+      for (var mapping in this.props.categoryMappings) {
+        rows.push(<CategoryMappingRow retailorCategory={mapping} duberCategory={this.props.categoryMappings[mapping]} />);
+      }
+
+      return (
+          <table>
+            <thead>
+              <th>Retailor Category</th>
+              <th>Vendor Category</th>
+            </thead>
+            <tbody>
+              {rows}
+            </tbody>
+          </table>
+      );
+    }
+  });
+
+  var CategoryMappingRow = React.createClass({
+    render : function() {
+      return <tr key={this.props.retailorCategory}><td>{this.props.retailorCategory}</td><td>{this.props.duberCategory}</td></tr>
+    }
+  });
+
+  var InventorySyncSettings = React.createClass({
+    render : function() {
+      return (
+          <div>
+            <LastSyncDetails retailerId={this.props.retailerId} />
+            <h2>Configuration Settings</h2>
+            <h3>Category Mappings</h3>
+            <CategoryMappings categoryMappings={config.CategoryMappings} />
+            <h3>Supplier Name Mappings</h3>
+            <div id="configSettings"></div>
+            <h2>Last Sync Events</h2>
+            <LastSyncEventsTable events={successEvents} />
+          </div>
+      )
+    }
+  });
+
+  ReactDOM.render(
+      <InventorySyncSettings retailerId="dc96584c-9531-4cfe-a0a3-5f78bc95014f"/>,
+      document.getElementById("main")
+  );
+</script>
